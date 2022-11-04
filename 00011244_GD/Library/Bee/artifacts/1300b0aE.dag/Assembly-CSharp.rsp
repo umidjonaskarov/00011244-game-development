@@ -358,6 +358,7 @@
 "Assets/Scripts/CameraController.cs"
 "Assets/Scripts/PlayerController.cs"
 "Assets/Scripts/SwipeController.cs"
+"Assets/Scripts/TileGenerator.cs"
 -langversion:9.0
 
 /deterministic
