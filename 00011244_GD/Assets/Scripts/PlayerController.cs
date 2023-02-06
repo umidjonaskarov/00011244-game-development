@@ -1,17 +1,24 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class PlayerController : MonoBehaviour
 {
 
     private CharacterController controller;
     private Vector3 dir; 
-    [SerializeField] private int speed;
+    [SerializeField] private float speed;
     [SerializeField] private float jumpForce;
     [SerializeField] private float gravity;
 
+    [SerializeField] private int coins;
+    [SerializeField] private Text coinsText;
+
     [SerializeField] private GameObject losePanel; 
+
+    private float maxSpeed = 110;
+
 
 private void OnControllerColliderHit(ControllerColliderHit hit)
     {
@@ -19,6 +26,18 @@ private void OnControllerColliderHit(ControllerColliderHit hit)
         {
             losePanel.SetActive(true);
             Time.timeScale = 0;
+        }
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        Debug.Log(other.gameObject.tag);
+        if (other.gameObject.tag == "Coins")
+        {
+            coins++;
+            PlayerPrefs.SetInt("coins", coins);
+            coinsText.text = coins.ToString();
+            Destroy(other.gameObject);
         }
     }
 
@@ -32,7 +51,11 @@ private void OnControllerColliderHit(ControllerColliderHit hit)
 
     void Start()
     {
+       Time.timeScale = 1; 
        controller = GetComponent<CharacterController>();
+       coins = PlayerPrefs.GetInt("coins");  
+       StartCoroutine(SpeedIncrease());
+
     }
 
     private void Update(){ 
@@ -76,5 +99,15 @@ private void OnControllerColliderHit(ControllerColliderHit hit)
         dir.z = speed;
         controller.Move(dir * Time.fixedDeltaTime);
         dir.y += gravity * Time.fixedDeltaTime; 
+    }
+
+    private IEnumerator SpeedIncrease()
+    {
+        yield return new WaitForSeconds(1);
+        if (speed < maxSpeed)
+        {
+            speed += 1;
+            StartCoroutine(SpeedIncrease());
+        }
     }
 }
